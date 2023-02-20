@@ -5,22 +5,27 @@ window.setup = () => {
   // background & environment
   createCanvas(800, 500);
   background("lightblue");
-  //world.gravity.y = 85;
+  world.gravity.y = 90;
 
   // ground
-  ground = new Sprite(0, 500, 800, 50, "static");
+  ground = new Sprite(0, 500, 100000, 50, "static");
   ground.friction = 0; // used to prevent player rotation
 
   // main player
-  player = createSprite(0, 450, 40, 85);
+  player = new Sprite(-100, 450);
+  player.width = 20;
+  player.height = 10;
   player.shapeColor = color("red");
   player.rotationLock = true;
 
   // tiles
   bricks = new Group();
-  bricks.w = 20;
-  bricks.h = 10;
+  bricks.w = 115;
+  bricks.h = 25;
   bricks.tile = '=';
+  bricks.collider = "static";
+  bricks.friction = 0;
+
 
   new Tiles(
     [
@@ -33,7 +38,7 @@ window.setup = () => {
       "......=....===....==........",
     ],
     0,
-    350,
+    290,
     bricks.w + 4,
     bricks.h + 4
   );
@@ -56,10 +61,9 @@ window.draw = () => {
   if (kb.presses("up")) {
     player.vel.y = -100;
   } else if (kb.pressing("down")) {
-    player.height = 50;
+    player.vel.vel = 50;
   } else {
     player.vel.y = 0;
-    player.height = 85;
   }
 
 };
