@@ -1,52 +1,73 @@
-import {
-  BoxGeometry,
-  Mesh,
-  MeshPhongMaterial,
-  PerspectiveCamera,
-  Scene,
-  WebGLRenderer,
-  DirectionalLight,
-} from "three";
 
-// Create our scene
-const scene = new Scene();
+let player, ground, bricks;
 
-// Create the camera so we can see our scene
-const camera = new PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
+// game setup
+window.setup = () => {
+  // background & environment
+  createCanvas(800, 500);
+  background("lightblue");
+  //world.gravity.y = 85;
 
-// Create our renderer and add it to the DOM
-const renderer = new WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+  // ground
+  ground = new Sprite(0, 500, 800, 50, "static");
+  ground.friction = 0; // used to prevent player rotation
 
-// Create our cube mesh from  a geometry and a material and add it to the scene
-const geometry = new BoxGeometry(1, 1, 1);
-const material = new MeshPhongMaterial({ color: 0x00ff00 });
-const cube = new Mesh(geometry, material);
-scene.add(cube);
+  // main player
+  player = createSprite(0, 450, 40, 85);
+  player.shapeColor = color("red");
+  player.rotationLock = true;
 
-// Add a directional light so we can see shadows on the cube
-const color = 0xffffff;
-const intensity = 1;
-const light = new DirectionalLight(color, intensity);
-light.position.set(-1, 2, 4);
-scene.add(light);
+  // tiles
+  bricks = new Group();
+  bricks.w = 20;
+  bricks.h = 10;
+  bricks.tile = '=';
 
-// Position the camera
-camera.position.z = 5;
-
-// The animation loop updates the cube's rotation
-function animate() {
-  requestAnimationFrame(animate);
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
-  renderer.render(scene, camera);
+  new Tiles(
+    [
+      ".........................=..",
+      "..=.....................=...",
+      ".......................=....",
+      ".=.=....=...................",
+      ".............=....=..==.....",
+      "......=.....==....==........",
+      "......=....===....==........",
+    ],
+    0,
+    350,
+    bricks.w + 4,
+    bricks.h + 4
+  );
 }
 
-// Start the animation loop
-animate();
+window.draw = () => {
+  background("lightblue");
+
+  camera.x = player.x;
+  // player x movement
+  if (kb.pressing("right")) {
+    player.vel.x +=0.5;
+  } else if (kb.pressing("left")) {
+    player.vel.x -=0.5;
+  } else {
+    player.vel.x = 0;
+  }
+
+  // player y movement
+  if (kb.presses("up")) {
+    player.vel.y = -100;
+  } else if (kb.pressing("down")) {
+    player.height = 50;
+  } else {
+    player.vel.y = 0;
+    player.height = 85;
+  }
+
+}
+
+function resetPlayer() {
+  player.vel.x = 0;
+  player.vel.y = 0;
+  player.x = 0;
+  player.y = 500;
+}
