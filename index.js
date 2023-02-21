@@ -1,7 +1,7 @@
 
-let player, ground, bricks, carrots;
+let player, ground, platform, carrots, falling;
 let score, exit, msg;
-let playerIdle;
+let playerIdle, playerJump;
 let walls;
 // game setup
 window.setup = () => {
@@ -28,12 +28,15 @@ window.setup = () => {
   exit = new Sprite(500, 500, 50, 50, "static");
 
   // ground
+  ground = new Group();
   ground = new Sprite(0, 500, 100000, 50, "static");
   ground.friction = 0; // used to prevent player rotation
   ground.img = "./assets/Ground.png"
 
   // main player
   player = new Sprite(-100, 450);
+
+  // idle animation
   playerIdle = loadAnimation(
     "./assets/player-idle-1.png",
     "./assets/player-idle-2.png");
@@ -43,14 +46,22 @@ window.setup = () => {
   player.shapeColor = color("red");
   player.rotationLock = true;
 
-  // platform tiles
-  bricks = new Group();
-  bricks.w = 115;
-  bricks.h = 25;
-  bricks.tile = '=';
-  bricks.collider = "static";
-  bricks.friction = 0;
-  bricks.img = "./assets/Platform.png"
+  // jumping animation
+  playerJump = loadAnimation(
+    "./assets/player-jump.png"
+  );
+  playerJump.frameDelay = 200;
+
+
+
+  // standard platform tiles
+  platform = new Group();
+  platform.w = 115;
+  platform.h = 25;
+  platform.tile = '=';
+  platform.collider = "static";
+  platform.friction = 0;
+  platform.img = "./assets/Platform.png"
 
 
   new Tiles(
@@ -62,17 +73,29 @@ window.setup = () => {
       ".=.=...................=...",
       ".......................=....",
       "........=...................",
-      ".............=....=..==.....",
-      "......=.....==....==........",
-      "......=....===....==........",
+      "............=.....=..==.....",
+      "......=....==.....==........",
+      "......=...===.....==........",
     ],
     0,
   200,
-    bricks.w + 4,
-    bricks.h + 4
+    platform.w + 4,
+    platform.h + 4
   );
 
-  // carrot tiles
+  // falling floor
+  falling = new Group();
+  falling.w = 115;
+  falling.h = 20;
+  falling.collider = "static";
+  falling.friction = 0;
+  for (let i = 0; i < 5; i++) {
+    let fallplat = new falling.Sprite();
+    fallplat.x = 1550 + 115 * i;
+    fallplat.y = 400;
+  }
+
+  // carrots
   carrots = new Group();
   carrots.w = 50;
   carrots.h = 50;
@@ -82,14 +105,17 @@ window.setup = () => {
 
 window.draw = () => {
   background("lightblue");
+  text("(" + mouseX + ", " + mouseY + ")", mouseX, mouseY);
   //text(msg, 100, 100);
 
   camera.x = player.x;
   // player x movement
   if (kb.pressing("right")) {
-    player.vel.x +=0.5;
+    player.vel.x = 5;
+    player.mirror.x = false;
   } else if (kb.pressing("left")) {
-    player.vel.x -=0.5;
+    player.vel.x = -5;
+    player.mirror.x = true;
   } else {
     player.vel.x = 0;
     player.ani = playerIdle;
@@ -98,12 +124,15 @@ window.draw = () => {
 
   // player y movement
   if (kb.presses("up")) {
-    player.vel.y = -150;
+    player.vel.y = -24;
+    player.ani = playerJump;
   } else if (kb.pressing("down")) {
-    player.vel.vel = 50;
-  } else {
-    player.vel.y = 0;
-    player.ani = playerIdle;
+    player.vel.y = 50;
+  }
+
+  // falling platform
+  if (player.collides(falling)) {
+    falling.collider = "dynamic";
   }
 
   // successful end
