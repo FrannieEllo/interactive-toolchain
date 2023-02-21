@@ -224,6 +224,9 @@ window.draw = () => {
     console.log("Uh oh, you fell!")
   }
 
+  if (lives == 0) {
+    gameOver();
+  }
 }
 
 function resetPlayer() {
@@ -236,4 +239,10 @@ function resetPlayer() {
 
 function collect(player, carrots) {
   carrots.remove();
+}
+
+function gameOver() {
+  player.remove();
+  let msg = "Game Over. You ran out of lives! Refresh to restart."
+  text(msg, 250, 200);
 }
