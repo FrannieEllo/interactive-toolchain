@@ -167,8 +167,8 @@ window.setup = () => {
 
 window.draw = () => {
   background("lightblue");
-  text("(" + mouseX + ", " + mouseY + ")", mouseX, mouseY);
-  allSprites.debug = mouse.pressing();
+  //text("(" + mouseX + ", " + mouseY + ")", mouseX, mouseY);
+  //allSprites.debug = mouse.pressing();
 
   total = "Carrots: " + score;
   text(total, 50, 50);
