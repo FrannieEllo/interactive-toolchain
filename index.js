@@ -11,11 +11,6 @@ var lives = 3;
 let total = "Carrots: " + score;
 let hp = "Lives: " + lives;
 
-function preload() {
-  soundFormats("mp3");
-  pickup = loadSound("./assets/xp-sound");
-  bgm = loadSound("./assets/sweden");
-}
 
 // game setup
 window.setup = () => {
